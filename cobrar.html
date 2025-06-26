@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Compra</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Formulario de Compra</h1>
+        <h2>Datos Personales</h2>
+        <div id="datos-personales">
+            <p><strong>Nombre:</strong> <span id="mostrar-nombre"></span></p>
+            <p><strong>Correo:</strong> <span id="mostrar-correo"></span></p>
+            <p><strong>Teléfono:</strong> <span id="mostrar-telefono"></span></p>
+            <p><strong>Destino:</strong> <span id="mostrar-destino"></span></p>
+            <p><strong>Fecha de viaje:</strong> <span id="mostrar-fecha"></span></p>
+            <p><strong>Guía turístico:</strong> <span id="mostrar-guia"></span></p>
+        </div>
+
+        <h2>Detalles de la Compra</h2>
+        <form id="formulario-compra" autocomplete="off">
+            <div class="campo">
+                <label for="cantidad">Cantidad:</label>
+                <input type="number" id="cantidad" name="cantidad" min="1" required>
+                <span class="mensaje-error"></span>
+            </div>
+            <div class="campo">
+                <label for="metodo-pago">Método de Pago:</label>
+                <select id="metodo-pago" name="metodo-pago" required>
+                    <option value="">Selecciona un método</option>
+                    <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="transferencia">Transferencia Bancaria</option>
+                </select>
+                <span class="mensaje-error"></span>
+            </div>
+            <div class="campo">
+                <label for="id_tarjeta">Número de tarjeta:</label>
+                <input type="number" id="id_tarjeta" name="numero de tarjeta" min="1" required>
+                <span class="mensaje-error"></span>
+            </div>
+            <button type="submit">Confirmar Compra</button>
+        </form>
+        <a href="index.html">Volver a Datos Personales</a>
+    </div>
+
+    <script>
+        // Mostrar datos personales guardados
+        window.onload = function() {
+            const datos = JSON.parse(localStorage.getItem('datosPersonales')) || {};
+            document.getElementById('mostrar-nombre').textContent = datos.nombre || 'No disponible';
+            document.getElementById('mostrar-correo').textContent = datos.correo || 'No disponible';
+            document.getElementById('mostrar-telefono').textContent = datos.telefono || 'No disponible';
+            document.getElementById('mostrar-destino').textContent = datos.destino || 'No disponible';
+            document.getElementById('mostrar-fecha').textContent = datos.fecha || 'No disponible';
+            document.getElementById('mostrar-guia').textContent = datos.guia === "si" ? "Sí" : (datos.guia === "no" ? "No" : "No disponible");
+        };
+
+        // Validación interactiva y procesamiento
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("formulario-compra");
+            const campos = form.querySelectorAll("input, select");
+            const mensajes = form.querySelectorAll(".mensaje-error");
+
+            campos.forEach((campo, idx) => {
+                campo.addEventListener("input", function () {
+                    validarCampo(campo, mensajes[idx]);
+                });
+            });
+
+            function validarCampo(campo, mensaje) {
+                if (!campo.checkValidity()) {
+                    if (campo.validity.valueMissing) {
+                        mensaje.textContent = "Este campo es obligatorio.";
+                    } else if (campo.type === "number" && campo.validity.rangeUnderflow) {
+                        mensaje.textContent = "Debe ser mayor a 0.";
+                    } else if (campo.tagName === "SELECT" && campo.value === "") {
+                        mensaje.textContent = "Seleccione una opción.";
+                    } else {
+                        mensaje.textContent = "Dato inválido.";
+                    }
+                } else {
+                    mensaje.textContent = "";
+                }
+            }
+
+            form.addEventListener("submit", function (event) {
+                let valido = true;
+                campos.forEach((campo, idx) => {
+                    validarCampo(campo, mensajes[idx]);
+                    if (!campo.checkValidity()) valido = false;
+                });
+
+                if (!valido) {
+                    event.preventDefault();
+                    return;
+                }
+
+                // Simulación de compra exitosa
+                alert('¡Compra confirmada! Gracias por confiar en RUTAS SECRETAS.');
+                form.reset();
+                event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>
